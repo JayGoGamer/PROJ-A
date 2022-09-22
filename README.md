@@ -1,1 +1,1 @@
-# PROG-1
+Project to display passenger messages on station for the NS.
