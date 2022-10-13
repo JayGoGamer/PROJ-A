@@ -5,7 +5,7 @@
 #
 # [description here]
 
-import datetime
+from datetime import datetime
 import random
 
 station_file = open("stations.txt", "r").read()
@@ -30,5 +30,7 @@ while True:
     if correct == "ja" or correct == "j":
         break
 
+tijd = datetime.now().time()
+
 file = open("berichten.txt", "a")
-file.write(naam + ";" + bericht + ";" + stations[station] + "\n")
+file.write(naam + ";" + bericht + ";" + stations[station] + ";" + tijd.strftime("%H:%M:%S") + "\n")
