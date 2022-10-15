@@ -6,7 +6,18 @@
 # [description here]
 
 from datetime import datetime
+import json
 
+
+def berichten():
+    with open("berichten.txt", "r") as file:
+        read_file = file.read()
+        split_file = read_file.split("\n")
+
+        if split_file[0] == "":
+            return False
+
+        return True
 
 def bericht_check():
     correct_bericht = input("\nVind u het een gepast bericht? (ja/nee) ").strip().lower()
@@ -29,6 +40,23 @@ def naam_check():
         print("De naam is afgekeurd, deze word veranderd naar anoniem")
         return False
 
+
+
+
+def moderator():
+    gegevens = []
+    naam = input("Wat is uw naam? ")
+    email = input("Wat is uw email? ")
+
+    if "@" not in email:
+        print("Geen geldig email adres, probeer opnieuw")
+        moderator()
+
+    else:
+        gegevens.append(naam)
+        gegevens.append(email)
+        return gegevens
+
 def bestand_split(file_name):
     file = open(file_name, "r").read()
 
@@ -43,27 +71,58 @@ def bestand_split(file_name):
 
     return bericht_data
 
-def naar_database(data):
-    print("Database")
+
+def goedgekeurd(bericht):
+    bericht_correct = bericht_check()
+    if not bericht_correct:
+        return False
+
+    if not naam_check():
+        bericht[0][0] = "Anoniem"
+
+    return True
+
+def naar_database(data, gegevens):
+    with open("gemodereerde_berichten.txt", "a") as file:
+        for i in range(0, 4):
+            file.write(str(data[0][i]) + ";")
+        file.write(gegevens[0] + ";" + gegevens[1] + "\n")
 
 
-moderator_naam = input("Wat is je naam? ")
-moderator_email = input("Wat is je email adres? ")
+def naar_afgekeurde(data, gegevens):
+    with open("afgekeurde_berichten.txt", "a") as file:
+        for i in range(0, 4):
+            file.write(str(data[0][i]) + ";")
+        file.write(gegevens[0] + ";" + gegevens[1] + "\n")
+
+
+def remove_line(data):
+    with open("berichten.txt", "w") as file:
+        for i in range(1, len(data)):
+            for x in range(0, len(data[0])):
+                file.write(data[i][x] + ";")
+            file.write("\n")
+
+moderator_gegevens = moderator()
 
 while True:
+
+    if not berichten():
+        print("Er zijn geen berichten om te modereren")
+        break
+
+    if input("\nWilt u stoppen? (ja/nee)").lower().strip() == "ja":
+        break
+
     bericht = bestand_split("berichten.txt")
 
     print("\nHet bericht om te modereren: " + bericht[0][1])
     print("\nDe naam om te modereren: " + bericht[0][0])
 
-    bericht_correct = bericht_check()
-    if bericht_correct:
-        naam_correct = naam_check()
-        if not naam_correct:
-            bericht[0][0] = "Anoniem"
+    if goedgekeurd(bericht):
+        naar_database(bericht, moderator_gegevens)
+        remove_line(bericht)
 
-            for data in bericht[0]:
-                naar_database(data)
-
-
-    break
+    else:
+        naar_afgekeurde(bericht, moderator_gegevens)
+        remove_line(bericht)

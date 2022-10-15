@@ -8,8 +8,9 @@
 from datetime import datetime
 import random
 
-station_file = open("stations.txt", "r").read()
-stations = station_file.split("\n")
+with open("stations.txt", "r") as file:
+    stations_file = file.read()
+    stations = stations_file.split("\n")
 
 station = random.randint(1, len(stations) - 1)
 
@@ -24,7 +25,7 @@ while True:
 
     bericht = input("Wat is uw bericht? ")
 
-    print(naam + " zegt " + bericht + " vanaf station " + stations[station])
+    print(naam + " zegt " + bericht.lower() + " vanaf station " + stations[station])
     correct = input("Klopt dit bericht? (ja/nee) ").strip().lower()
 
     if correct == "ja" or correct == "j":
@@ -32,5 +33,5 @@ while True:
 
 tijd = datetime.now().time()
 
-file = open("berichten.txt", "a")
-file.write(naam + ";" + bericht + ";" + stations[station] + ";" + tijd.strftime("%H:%M:%S") + "\n")
+with open("berichten.txt", "a") as file:
+    file.write(naam + ";" + bericht + ";" + stations[station] + ";" + tijd.strftime("%H:%M:%S") + "\n")
