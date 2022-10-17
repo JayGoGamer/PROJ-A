@@ -22,25 +22,29 @@ def berichten():
 def bericht_check():
     correct_bericht = input("\nVind u het een gepast bericht? (ja/nee) ").strip().lower()
 
+    if correct_bericht == "stop":
+        return -1
+
     if correct_bericht == "j" or correct_bericht == "ja":
         print("Het bericht is goedgekeurd")
-        return True
+        return 1
     else:
         print("het bericht is afgekeurd")
-        return False
+        return 0
 
 
 def naam_check():
     correcte_naam = input("\nVind U het een gepaste naam? (ja/nee) ").strip().lower()
 
+    if correcte_naam == "stop":
+        return -1
+
     if correcte_naam == "j" or correcte_naam == "ja":
         print("De naam is goedgekeurd")
-        return True
+        return 1
     else:
         print("De naam is afgekeurd, deze word veranderd naar anoniem")
-        return False
-
-
+        return 0
 
 
 def moderator():
@@ -56,6 +60,7 @@ def moderator():
         gegevens.append(naam)
         gegevens.append(email)
         return gegevens
+
 
 def bestand_split(file_name):
     file = open(file_name, "r").read()
@@ -74,13 +79,22 @@ def bestand_split(file_name):
 
 def goedgekeurd(bericht):
     bericht_correct = bericht_check()
-    if not bericht_correct:
-        return False
 
-    if not naam_check():
+    if bericht_correct == -1:
+        return -1
+
+    if bericht_correct == 0:
+        return 0
+
+    naam_correct = naam_check()
+    if naam_correct == 0:
         bericht[0][0] = "Anoniem"
 
-    return True
+    if naam_correct == -1:
+        return -1
+
+    return 1
+
 
 def naar_database(data, gegevens):
     with open("gemodereerde_berichten.txt", "a") as file:
@@ -103,7 +117,12 @@ def remove_line(data):
                 file.write(data[i][x] + ";")
             file.write("\n")
 
+
+print("\n==================== Moderatie ====================\n")
+
 moderator_gegevens = moderator()
+
+print("\nTyp stop op elk moment om het modereren te stoppen")
 
 while True:
 
@@ -111,18 +130,22 @@ while True:
         print("Er zijn geen berichten om te modereren")
         break
 
-    if input("\nWilt u stoppen? (ja/nee)").lower().strip() == "ja":
-        break
-
     bericht = bestand_split("berichten.txt")
 
     print("\nHet bericht om te modereren: " + bericht[0][1])
     print("\nDe naam om te modereren: " + bericht[0][0])
 
-    if goedgekeurd(bericht):
+    correct = goedgekeurd(bericht)
+
+    if correct == -1:
+        print("\nBedankt voor het modereren!")
+        print("\n====================================================\n")
+        break
+
+    elif correct == 1:
         naar_database(bericht, moderator_gegevens)
         remove_line(bericht)
 
-    else:
+    elif correct == 0:
         naar_afgekeurde(bericht, moderator_gegevens)
         remove_line(bericht)
