@@ -60,7 +60,6 @@ def moderator():
     else:
         gegevens.append(naam)
         gegevens.append(email)
-        print(gegevens)
         return gegevens
 
 
@@ -111,11 +110,16 @@ def open_database(psswrd):
 def mod_to_database(gegevens, connection):
     cursor = connection.cursor()
 
-    moderatie_tijd = datetime.now().time()
-    moderatie_datum = datetime.now().date()
+    cursor.execute("SELECT moderatieid FROM moderator WHERE emailadress = %s", (gegevens[1],))
+    moderatieid = cursor.fetchone()
 
-    cursor.execute("INSERT INTO moderator (naam, emailadress, datum, tijd) VALUES(%s, %s, %s, %s)",
-                   (gegevens[0], gegevens[1], moderatie_datum.strftime("%y/%m/%d"), moderatie_tijd.strftime("%H:%M:%S")))
+    if moderatieid is None:
+        cursor.execute("INSERT INTO moderator (naam, emailadress) VALUES(%s, %s)",
+                       (gegevens[0], gegevens[1]))
+        return 0
+
+    else:
+        return moderatieid
 
 
 def pull_modID(connection, gegevens):
@@ -134,9 +138,12 @@ def add_database(data, connection, modID, status):
     else:
         gekeurd = False
 
-    cursor.execute("""INSERT INTO bericht (naam, bericht, datum, tijd, locatie, goedgekeurd, moderatorID, stationID) 
-                    VALUES(%s, %s, %s, %s, %s, %s, %s, %s)""",
-                   (data[0][0], data[0][1], data[0][4], data[0][3], data[0][2], gekeurd, modID, data[0][2]))
+    moderatie_tijd = datetime.now().time()
+    moderatie_datum = datetime.now().date()
+
+    cursor.execute("""INSERT INTO bericht (naam, bericht, datum, tijd, locatie, goedgekeurd, moderatorID, stationID, moddatum, modtijd) 
+                      VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)""",
+                   (data[0][0], data[0][1], data[0][4], data[0][3], data[0][2], gekeurd, modID, data[0][2], moderatie_datum.strftime("%y/%m/%d"), moderatie_tijd.strftime("%H:%M:%S")))
 
 
 def remove_line(data):
@@ -156,14 +163,16 @@ database_connection = open_database(wachtwoord)
 
 print("\nTyp stop op elk moment om het modereren te stoppen")
 
-mod_to_database(moderator_gegevens, database_connection)
+if mod_to_database(moderator_gegevens, database_connection) != 0:
+    moderatorID = pull_modID(database_connection, moderator_gegevens)
+else:
+    moderatorID = mod_to_database(moderator_gegevens, database_connection)
 
 database_connection.commit()
 database_connection.close()
 
 database_connection = open_database(wachtwoord)
 
-moderatorID = pull_modID(database_connection, moderator_gegevens)
 
 while True:
 
@@ -187,6 +196,6 @@ while True:
         database_connection.close()
         break
 
-    elif correct == 1 or correct == 0:
+    else:
         add_database(bericht, database_connection, moderatorID, correct)
         remove_line(bericht)
