@@ -25,13 +25,16 @@ while True:
 
     bericht = input("Wat is uw bericht? ")
 
-    print(naam + " zegt " + bericht.lower() + " vanaf station " + stations[station])
-    correct = input("Klopt dit bericht? (ja/nee) ").strip().lower()
-
-    if correct == "ja" or correct == "j":
-        break
+    if len(bericht) < 140:
+        print(naam + " zegt " + bericht.lower() + " vanaf station " + stations[station])
+        correct = input("Klopt dit bericht? (ja/nee) ").strip().lower()
+        if correct == "ja" or correct == "j":
+            break
+    else:
+        print("Uw bericht is te lang, probeer opnieuw")
 
 tijd = datetime.now().time()
+datum = datetime.now().date()
 
 with open("berichten.txt", "a") as file:
-    file.write(naam + ";" + bericht + ";" + stations[station] + ";" + tijd.strftime("%H:%M:%S") + "\n")
+    file.write(naam + ";" + bericht + ";" + stations[station] + ";" + tijd.strftime("%H:%M:%S") + ";" + datum.strftime("%d/%m/%y") + "\n")

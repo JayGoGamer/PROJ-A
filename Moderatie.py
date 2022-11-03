@@ -7,6 +7,7 @@
 
 from datetime import datetime
 import json
+import psycopg2
 
 
 def berichten():
@@ -59,6 +60,7 @@ def moderator():
     else:
         gegevens.append(naam)
         gegevens.append(email)
+        print(gegevens)
         return gegevens
 
 
@@ -96,18 +98,40 @@ def goedgekeurd(bericht):
     return 1
 
 
-def naar_database(data, gegevens):
-    with open("gemodereerde_berichten.txt", "a") as file:
-        for i in range(0, 4):
-            file.write(str(data[0][i]) + ";")
-        file.write(gegevens[0] + ";" + gegevens[1] + "\n")
+def open_database(psswrd):
+    connection = psycopg2.connect(database="nsBerichten",
+                                  host="127.0.0.1",
+                                  user="postgres",
+                                  password=psswrd,
+                                  port="5432")
+
+    return connection
 
 
-def naar_afgekeurde(data, gegevens):
-    with open("afgekeurde_berichten.txt", "a") as file:
-        for i in range(0, 4):
-            file.write(str(data[0][i]) + ";")
-        file.write(gegevens[0] + ";" + gegevens[1] + "\n")
+def mod_to_database(gegevens, connection):
+    cursor = connection.cursor()
+
+    moderatie_tijd = datetime.now().time()
+    moderatie_datum = datetime.now().date()
+
+    cursor.execute("INSERT INTO moderator (naam, emailadress, datum, tijd) VALUES(%s, %s, %s, %s)",
+                   (gegevens[0], gegevens[1], moderatie_datum.strftime("%y/%m/%d"), moderatie_tijd.strftime("%H:%M:%S")))
+
+
+def pull_modID(connection, gegevens):
+    cursor = connection.cursor()
+
+    cursor.execute("SELECT moderatieid FROM moderator WHERE emailadress = %s", (gegevens[1],))
+    moderatieid = cursor.fetchone()
+
+    return moderatieid
+
+def add_database(data, connection, modID):
+    cursor = connection.cursor()
+
+    cursor.execute("""INSERT INTO bericht (naam, bericht, datum, tijd, locatie, goedgekeurd, moderatorID, stationID) 
+                    VALUES(%s, %s, %s, %s, %s, %s, %s, %s)""",
+                   (data[0][0], data[0][1], data[0][4], data[0][3], data[0][2], True, modID, data[0][2]))
 
 
 def remove_line(data):
@@ -121,13 +145,27 @@ def remove_line(data):
 print("\n==================== Moderatie ====================\n")
 
 moderator_gegevens = moderator()
+wachtwoord = input("Wat is het wachtwoord van de database? ")
+
+database_connection = open_database(wachtwoord)
 
 print("\nTyp stop op elk moment om het modereren te stoppen")
+
+mod_to_database(moderator_gegevens, database_connection)
+
+database_connection.commit()
+database_connection.close()
+
+database_connection = open_database(wachtwoord)
+
+moderatorID = pull_modID(database_connection, moderator_gegevens)
 
 while True:
 
     if not berichten():
         print("Er zijn geen berichten om te modereren")
+        database_connection.commit()
+        database_connection.close()
         break
 
     bericht = bestand_split("berichten.txt")
@@ -140,12 +178,13 @@ while True:
     if correct == -1:
         print("\nBedankt voor het modereren!")
         print("\n====================================================\n")
+        database_connection.commit()
+        database_connection.close()
         break
 
     elif correct == 1:
-        naar_database(bericht, moderator_gegevens)
+        add_database(bericht, database_connection, moderatorID)
         remove_line(bericht)
 
     elif correct == 0:
-        naar_afgekeurde(bericht, moderator_gegevens)
         remove_line(bericht)
