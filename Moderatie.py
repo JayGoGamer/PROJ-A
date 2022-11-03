@@ -126,12 +126,17 @@ def pull_modID(connection, gegevens):
 
     return moderatieid
 
-def add_database(data, connection, modID):
+
+def add_database(data, connection, modID, status):
     cursor = connection.cursor()
+    if status == 1:
+        gekeurd = True
+    else:
+        gekeurd = False
 
     cursor.execute("""INSERT INTO bericht (naam, bericht, datum, tijd, locatie, goedgekeurd, moderatorID, stationID) 
                     VALUES(%s, %s, %s, %s, %s, %s, %s, %s)""",
-                   (data[0][0], data[0][1], data[0][4], data[0][3], data[0][2], True, modID, data[0][2]))
+                   (data[0][0], data[0][1], data[0][4], data[0][3], data[0][2], gekeurd, modID, data[0][2]))
 
 
 def remove_line(data):
@@ -182,9 +187,6 @@ while True:
         database_connection.close()
         break
 
-    elif correct == 1:
-        add_database(bericht, database_connection, moderatorID)
-        remove_line(bericht)
-
-    elif correct == 0:
+    elif correct == 1 or correct == 0:
+        add_database(bericht, database_connection, moderatorID, correct)
         remove_line(bericht)
