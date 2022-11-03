@@ -6,7 +6,6 @@
 # [description here]
 
 from datetime import datetime
-import json
 import psycopg2
 
 
@@ -19,6 +18,7 @@ def berichten():
             return False
 
         return True
+
 
 def bericht_check():
     correct_bericht = input("\nVind u het een gepast bericht? (ja/nee) ").strip().lower()
@@ -141,9 +141,11 @@ def add_database(data, connection, modID, status):
     moderatie_tijd = datetime.now().time()
     moderatie_datum = datetime.now().date()
 
-    cursor.execute("""INSERT INTO bericht (naam, bericht, datum, tijd, locatie, goedgekeurd, moderatorID, stationID, moddatum, modtijd) 
+    cursor.execute("""INSERT INTO bericht 
+                          (naam, bericht, datum, tijd, locatie, goedgekeurd, moderatorID, stationID, moddatum, modtijd) 
                       VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)""",
-                   (data[0][0], data[0][1], data[0][4], data[0][3], data[0][2], gekeurd, modID, data[0][2], moderatie_datum.strftime("%y/%m/%d"), moderatie_tijd.strftime("%H:%M:%S")))
+                   (data[0][0], data[0][1], data[0][4], data[0][3], data[0][2], gekeurd, modID, data[0][2],
+                    moderatie_datum.strftime("%y/%m/%d"), moderatie_tijd.strftime("%H:%M:%S")))
 
 
 def remove_line(data):
