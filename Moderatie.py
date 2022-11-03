@@ -3,7 +3,10 @@
 # Created by Jay Huissen
 # Created on 12-10-2022
 #
-# [description here]
+# De functie van dit programma is om de berichten die binnen komen te modereren.
+# Nadat de berichten gemodereerd zijn worden ze naar de database gestuurd door de code. Daarbij word de datum en tijd
+# van het modereren er ook meegestuurd. De naam van de moderator word meegegeven naar de database, hier krijgt het
+# zijn eigen nummer waar het aan gelinkt zit via een email adress.
 
 from datetime import datetime
 import psycopg2
@@ -114,8 +117,7 @@ def mod_to_database(gegevens, connection):
     moderatieid = cursor.fetchone()
 
     if moderatieid is None:
-        cursor.execute("INSERT INTO moderator (naam, emailadress) VALUES(%s, %s)",
-                       (gegevens[0], gegevens[1]))
+        cursor.execute("INSERT INTO moderator (naam, emailadress) VALUES(%s, %s)", (gegevens[0], gegevens[1]))
         return 0
 
     else:
@@ -159,7 +161,7 @@ def remove_line(data):
 print("\n==================== Moderatie ====================\n")
 
 moderator_gegevens = moderator()
-wachtwoord = input("Wat is het wachtwoord van de database? ")
+wachtwoord = input("\nWat is het wachtwoord van de database? ")
 
 database_connection = open_database(wachtwoord)
 
@@ -170,6 +172,8 @@ if mod_to_database(moderator_gegevens, database_connection) != 0:
 else:
     moderatorID = mod_to_database(moderator_gegevens, database_connection)
 
+print("\nJe moderatie ID is " + str(moderatorID))
+
 database_connection.commit()
 database_connection.close()
 
@@ -179,7 +183,7 @@ database_connection = open_database(wachtwoord)
 while True:
 
     if not berichten():
-        print("Er zijn geen berichten om te modereren")
+        print("\nEr zijn geen berichten om te modereren")
         database_connection.commit()
         database_connection.close()
         break

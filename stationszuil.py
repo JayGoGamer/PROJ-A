@@ -3,7 +3,8 @@
 # Created by Jay Huissen
 # Created on 26-09-2022
 #
-# [description here]
+# Dit programma krijgt de berichten die mensen willen doorgeven aan het systeem. Hiermee kunnen ze hun berichten laten
+# zien nadat ze door het moderatie programma heen gaan.
 
 from datetime import datetime
 import random
