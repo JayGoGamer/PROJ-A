@@ -7,6 +7,7 @@
 
 from tkinter import *
 import psycopg2
+from PIL import Image, ImageTk
 
 root = Tk()
 root.geometry("1920x1080")
@@ -28,52 +29,32 @@ def stations_keuze(station):
     pagina.title(station)
     pagina.geometry("1920x1080")
 
+    text_blok_raw = Image.open("textBlok.png")
+    resized_text_blok = text_blok_raw.resize((300, 300))
+    text_blok = ImageTk.PhotoImage(resized_text_blok)
+
+
     sluiten = Button(pagina, text="Ga terug", command=pagina.destroy, width=20, font=("Arial", 15))
     sluiten.pack()
 
     connection = open_database(psswrd)
     cursor = connection.cursor()
 
-    cursor.execute("SELECT ov_bike, elevator, toilet, park_and_ride FROM station_service WHERE station_city = %s", (station, ))
+    cursor.execute("SELECT ov_bike, elevator, toilet, park_and_ride FROM station_service WHERE station_city = %s",
+                   (station,))
     faciliteiten = cursor.fetchall()
 
-    cursor.execute("SELECT bericht, naam, datum, tijd FROM bericht WHERE locatie = %s AND goedgekeurd = True ORDER BY datum, tijd DESC", (station, ))
+    cursor.execute(
+        "SELECT bericht, naam, datum, tijd FROM berichten WHERE locatie = %s AND goedgekeurd = True ORDER BY datum, tijd DESC",
+        (station,))
     berichten = cursor.fetchmany(5)
 
-    bericht1 = Label(pagina, text="")
-    bericht1.pack()
-    bericht2 = Label(pagina, text="")
-    bericht2.pack()
-    bericht3 = Label(pagina, text="")
-    bericht3.pack()
-    bericht4 = Label(pagina, text="")
-    bericht4.pack()
-    bericht5 = Label(pagina, text="")
-    bericht5.pack()
 
-    match len(berichten):
-        case 1:
-            bericht1.config(text=berichten[0][0])
-        case 2:
-            bericht1.config(text=berichten[0][0])
-            bericht2.config(text=berichten[1][0])
-        case 3:
-            bericht1.config(text=berichten[0][0])
-            bericht2.config(text=berichten[1][0])
-            bericht3.config(text=berichten[2][0])
-        case 4:
-            bericht1.config(text=berichten[0][0])
-            bericht2.config(text=berichten[1][0])
-            bericht3.config(text=berichten[2][0])
-            bericht4.config(text=berichten[3][0])
-        case 5:
-            bericht1.config(text=berichten[0][0])
-            bericht2.config(text=berichten[1][0])
-            bericht3.config(text=berichten[2][0])
-            bericht4.config(text=berichten[3][0])
-            bericht5.config(text=berichten[4][0])
-        case _:
-            bericht1.config(text="Er zijn geen berichten")
+
+    for bericht in berichten:
+        label = Label(pagina, text=bericht[0], image=text_blok, compound="center")
+        label.image = text_blok
+        label.pack()
 
 
 def show():
@@ -103,8 +84,5 @@ drop.pack()
 
 button = Button(root, text="Selecteer station", command=show, width=20, font=("Arial", 15))
 button.pack()
-
-label = Label(text=" ")
-label.pack()
 
 root.mainloop()

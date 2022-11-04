@@ -113,7 +113,7 @@ def open_database(psswrd):
 def mod_to_database(gegevens, connection):
     cursor = connection.cursor()
 
-    cursor.execute("SELECT moderatieid FROM moderator WHERE emailadress = %s", (gegevens[1],))
+    cursor.execute("SELECT moderator.moderatorid FROM moderator WHERE emailadress = %s", (gegevens[1],))
     moderatieid = cursor.fetchone()
 
     if moderatieid is None:
@@ -127,7 +127,7 @@ def mod_to_database(gegevens, connection):
 def pull_modID(connection, gegevens):
     cursor = connection.cursor()
 
-    cursor.execute("SELECT moderatieid FROM moderator WHERE emailadress = %s", (gegevens[1],))
+    cursor.execute("SELECT moderator.moderatorid FROM moderator WHERE emailadress = %s", (gegevens[1],))
     moderatieid = cursor.fetchone()
 
     return moderatieid
@@ -143,10 +143,10 @@ def add_database(data, connection, modID, status):
     moderatie_tijd = datetime.now().time()
     moderatie_datum = datetime.now().date()
 
-    cursor.execute("""INSERT INTO bericht 
-                          (naam, bericht, datum, tijd, locatie, goedgekeurd, moderatorID, moddatum, modtijd) 
+    cursor.execute("""INSERT INTO berichten 
+                          (naam, bericht, datum, tijd, locatie, goedgekeurd, moderatorid, moddatum, modtijd) 
                       VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s)""",
-                   (data[0][0], data[0][1], data[0][4], data[0][3], data[0][2], gekeurd, modID,
+                   (data[0][0], data[0][1], data[0][4], data[0][3], data[0][2], gekeurd, modID[0],
                     moderatie_datum.strftime("%d/%m/%y"), moderatie_tijd.strftime("%H:%M:%S")))
 
 
