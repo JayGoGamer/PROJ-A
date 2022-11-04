@@ -147,7 +147,7 @@ def add_database(data, connection, modID, status):
                           (naam, bericht, datum, tijd, locatie, goedgekeurd, moderatorID, stationID, moddatum, modtijd) 
                       VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)""",
                    (data[0][0], data[0][1], data[0][4], data[0][3], data[0][2], gekeurd, modID, data[0][2],
-                    moderatie_datum.strftime("%y/%m/%d"), moderatie_tijd.strftime("%H:%M:%S")))
+                    moderatie_datum.strftime("%d/%m/%y"), moderatie_tijd.strftime("%H:%M:%S")))
 
 
 def remove_line(data):

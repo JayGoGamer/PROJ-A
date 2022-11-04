@@ -8,23 +8,15 @@
 from tkinter import *
 import psycopg2
 
-global bericht4_data
-global bericht3_data
-global bericht2_data
-global bericht1_data
-global nieuw_bericht
-
 root = Tk()
 root.geometry("1200x600")
 
 
-def open_database():
-    psswrd = input("Geef het wachtwoord van de database op: ")
-
+def open_database(password):
     connection = psycopg2.connect(database="nsBerichten",
                                   host="127.0.0.1",
                                   user="postgres",
-                                  password=psswrd,
+                                  password=password,
                                   port="5432")
 
     return connection
@@ -32,16 +24,13 @@ def open_database():
 
 def stations_keuze(station):
     print(station)
+    label.config(text=station)
+
+def show():
+    stations_keuze(clicked.get())
 
 
-def show(berichten):
-    nieuw_bericht = clicked.get()
-    stations_keuze(nieuw_bericht)
-
-
-while True:
-    open_database()
-    break
+psswrd = input("Geef het wachtwoord van de database op: ")
 
 options = []
 
@@ -65,19 +54,7 @@ drop.pack()
 button = Button(root, text="Selecteer station", command=show, width=20, font=("Arial", 15))
 button.pack()
 
-bericht1 = Label(root, text=" ")
-bericht1.pack()
-
-bericht2 = Label(root, text=" ")
-bericht2.pack()
-
-bericht3 = Label(root, text=" ")
-bericht3.pack()
-
-bericht4 = Label(root, text=" ")
-bericht4.pack()
-
-bericht5 = Label(root, text=" ")
-bericht5.pack()
+label = Label(text=" ")
+label.pack()
 
 root.mainloop()
