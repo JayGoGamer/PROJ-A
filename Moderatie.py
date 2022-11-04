@@ -144,9 +144,9 @@ def add_database(data, connection, modID, status):
     moderatie_datum = datetime.now().date()
 
     cursor.execute("""INSERT INTO bericht 
-                          (naam, bericht, datum, tijd, locatie, goedgekeurd, moderatorID, stationID, moddatum, modtijd) 
-                      VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)""",
-                   (data[0][0], data[0][1], data[0][4], data[0][3], data[0][2], gekeurd, modID, data[0][2],
+                          (naam, bericht, datum, tijd, locatie, goedgekeurd, moderatorID, moddatum, modtijd) 
+                      VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s)""",
+                   (data[0][0], data[0][1], data[0][4], data[0][3], data[0][2], gekeurd, modID,
                     moderatie_datum.strftime("%d/%m/%y"), moderatie_tijd.strftime("%H:%M:%S")))
 
 
