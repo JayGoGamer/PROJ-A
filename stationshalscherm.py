@@ -30,8 +30,6 @@ def stations_keuze(station):
     pagina.geometry("1920x1080")
 
     text_blok_raw = Image.open("textBlok.png")
-    resized_text_blok = text_blok_raw.resize((300, 300))
-    text_blok = ImageTk.PhotoImage(resized_text_blok)
 
 
     sluiten = Button(pagina, text="Ga terug", command=pagina.destroy, width=20, font=("Arial", 15))
@@ -52,7 +50,9 @@ def stations_keuze(station):
 
 
     for bericht in berichten:
-        label = Label(pagina, text=bericht[0], image=text_blok, compound="center")
+        resized_text_blok = text_blok_raw.resize(((len(bericht[0]) * 12), 100))
+        text_blok = ImageTk.PhotoImage(resized_text_blok)
+        label = Label(pagina, text=bericht[0], image=text_blok, compound="center", font=("Arial", 15))
         label.image = text_blok
         label.pack()
 
