@@ -38,21 +38,29 @@ def stations_keuze(station):
     connection = open_database(psswrd)
     cursor = connection.cursor()
 
-    cursor.execute("SELECT ov_bike, elevator, toilet, park_and_ride FROM station_service WHERE station_city = %s",
-                   (station,))
+    cursor.execute(
+        """SELECT ov_bike, elevator, toilet, park_and_ride FROM station_service 
+        WHERE station_city = %s""",
+        (station,))
     faciliteiten = cursor.fetchall()
 
     cursor.execute(
-        "SELECT bericht, naam, datum, tijd FROM berichten WHERE locatie = %s AND goedgekeurd = True ORDER BY datum, tijd DESC",
+        """SELECT bericht, naam, datum, tijd FROM berichten 
+        WHERE locatie = %s AND goedgekeurd = True 
+        ORDER BY datum, tijd DESC""",
         (station,))
     berichten = cursor.fetchmany(5)
 
-
-
     for bericht in berichten:
-        resized_text_blok = text_blok_raw.resize(((len(bericht[0]) * 12), 100))
+        if len(bericht[0]) > (3 + len(bericht[1]) + len(str(bericht[3])) + len(str(bericht[2]))):
+            message_length = len(bericht[0])
+        else:
+            message_length = len(bericht[1]) + len(str(bericht[3]))  + len(str(bericht[2])) + 3
+
+        resized_text_blok = text_blok_raw.resize(((message_length * 12), 100))
         text_blok = ImageTk.PhotoImage(resized_text_blok)
-        label = Label(pagina, text=bericht[0], image=text_blok, compound="center", font=("Arial", 15))
+        label = Label(pagina, text=(bericht[0] + "\n" + bericht[1] + ", " + str(bericht[3]) + " " + str(bericht[2])),
+                      image=text_blok, compound="center", font=("Arial", 15))
         label.image = text_blok
         label.pack()
 
