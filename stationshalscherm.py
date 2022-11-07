@@ -36,15 +36,11 @@ def stations_keuze(station):
     weer_frame = Frame(pagina)
     weer_frame.place(relx=1, rely=0.5, anchor=E)
 
+    ovfiets_raw = Image.open("images/img_ovfiets.png")
     text_blok_raw = Image.open("images/textBlok.png")
     lift_raw = Image.open("images/img_lift.png")
-    img_lift = ImageTk.PhotoImage(lift_raw)
-    ovfiets_raw = Image.open("images/img_ovfiets.png")
-    img_ovfiets = ImageTk.PhotoImage(ovfiets_raw)
     pr_raw = Image.open("images/img_pr.png")
-    img_pr = ImageTk.PhotoImage(pr_raw)
     toilet_raw = Image.open("images/img_toilet.png")
-    img_toilet = ImageTk.PhotoImage(toilet_raw)
 
     sluiten = Button(frame, text="Ga terug", command=pagina.destroy, width=20, font=("Arial", 15))
     sluiten.pack()
@@ -86,18 +82,27 @@ def stations_keuze(station):
             if fac is True:
                 match count:
                     case 1:
-                        label = Label(weer_frame, text="fiets", image=img_ovfiets, compound="center")
-                        print(fac)
+                        ovfiets_resized = ovfiets_raw.resize((128, 128))
+                        img_ovfiets = ImageTk.PhotoImage(ovfiets_resized)
+                        label = Label(weer_frame, image=img_ovfiets, compound="center")
+                        label.Image = img_ovfiets
+                        label.pack()
                     case 2:
+                        img_lift = ImageTk.PhotoImage(lift_raw)
                         label = Label(weer_frame, text="", image=img_lift, compound="center")
-                        print(fac)
+                        label.Image = img_lift
+                        label.pack()
                     case 3:
+                        img_toilet = ImageTk.PhotoImage(toilet_raw)
                         label = Label(weer_frame, text="", image=img_toilet, compound="center")
-                        print(fac)
+                        label.Image = img_toilet
+                        label.pack()
                     case 4:
+                        img_pr = ImageTk.PhotoImage(pr_raw)
                         label = Label(weer_frame, text="", image=img_pr, compound="center")
-                        print(fac)
-                label.pack()
+                        label.Image = img_pr
+                        label.pack()
+
 
 
 def show():
