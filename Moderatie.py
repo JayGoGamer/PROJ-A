@@ -172,8 +172,6 @@ if mod_to_database(moderator_gegevens, database_connection) != 0:
 else:
     moderatorID = mod_to_database(moderator_gegevens, database_connection)
 
-print("\nJe moderatie ID is " + str(moderatorID))
-
 database_connection.commit()
 database_connection.close()
 

@@ -10,7 +10,7 @@ import psycopg2
 from PIL import Image, ImageTk
 
 root = Tk()
-root.geometry("1920x1080")
+root.attributes("-fullscreen", True)
 
 
 def open_database(password):
@@ -26,13 +26,20 @@ def open_database(password):
 def stations_keuze(station):
     pagina = Toplevel(root)
 
+    pagina.attributes("-fullscreen", True)
     pagina.title(station)
-    pagina.geometry("1920x1080")
+
+    frame = Frame(pagina)
+    frame.place(relx=0.1, rely=0.1, anchor=S)
+    berichten_frame = Frame(pagina)
+    berichten_frame.place(relx=0, rely=0.5, anchor=W)
+    weer_frame = Frame(pagina)
+    weer_frame.place(relx=0, rely=0.5, anchor=E)
 
     text_blok_raw = Image.open("textBlok.png")
 
 
-    sluiten = Button(pagina, text="Ga terug", command=pagina.destroy, width=20, font=("Arial", 15))
+    sluiten = Button(frame, text="Ga terug", command=pagina.destroy, width=20, font=("Arial", 15))
     sluiten.pack()
 
     connection = open_database(psswrd)
@@ -55,11 +62,11 @@ def stations_keuze(station):
         if len(bericht[0]) > (3 + len(bericht[1]) + len(str(bericht[3])) + len(str(bericht[2]))):
             message_length = len(bericht[0])
         else:
-            message_length = len(bericht[1]) + len(str(bericht[3]))  + len(str(bericht[2])) + 3
+            message_length = len(bericht[1]) + len(str(bericht[3])) + len(str(bericht[2])) + 3
 
         resized_text_blok = text_blok_raw.resize(((message_length * 12), 100))
         text_blok = ImageTk.PhotoImage(resized_text_blok)
-        label = Label(pagina, text=(bericht[0] + "\n" + bericht[1] + ", " + str(bericht[3]) + " " + str(bericht[2])),
+        label = Label(berichten_frame, text=(bericht[0] + "\n" + bericht[1] + ", " + str(bericht[3]) + " " + str(bericht[2])),
                       image=text_blok, compound="center", font=("Arial", 15))
         label.image = text_blok
         label.pack()

@@ -4,7 +4,7 @@
 # Created on 26-09-2022
 #
 # Dit programma krijgt de berichten die mensen willen doorgeven aan het systeem. Hiermee kunnen ze hun berichten laten
-# zien nadat ze door het moderatie programma heen gaan.
+# zien nadat ze door het moderatieprogramma heen gaan.
 
 from datetime import datetime
 import random
