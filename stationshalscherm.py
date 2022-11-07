@@ -30,13 +30,14 @@ def open_database(password):
 
 
 def weer_voorspelling(stad, master):
-    url = "https://api.openweathermap.org/data/2.5/weather?lang=nl&q=" + stad + "&appid=19ecd013edf92958558f4f6d3b99afbf"
+    with open("api.txt", "r") as api_key_raw:
+        api_key = api_key_raw.read()
+    url = "https://api.openweathermap.org/data/2.5/weather?lang=nl&q=" + stad + \
+          "&appid=" + api_key + "&units=metric"
 
     weer_json = requests.get(url).json()
 
-    kelvin = 273.15
-
-    temperatuur = weer_json["main"]["temp"] - kelvin
+    temperatuur = weer_json["main"]["temp"]
     weer_icon = weer_json["weather"][0]["icon"]
 
     link = "http://openweathermap.org/img/wn/" + weer_icon + "@4x.png"
@@ -54,6 +55,35 @@ def weer_voorspelling(stad, master):
     label.pack()
 
 
+def berichten(master, stad):
+    connection = open_database(psswrd)
+    cursor = connection.cursor()
+
+    text_blok_raw = Image.open("images/textBlok.png")
+
+    cursor.execute(
+        """SELECT bericht, naam, datum, tijd FROM berichten 
+        WHERE locatie = %s AND goedgekeurd = True 
+        ORDER BY datum, tijd DESC""",
+        (stad,))
+    berichten = cursor.fetchmany(5)
+
+    for bericht in berichten:
+        if len(bericht[0]) > (3 + len(bericht[1]) + len(str(bericht[3])) + len(str(bericht[2]))):
+            message_length = len(bericht[0])
+        else:
+            message_length = len(bericht[1]) + len(str(bericht[3])) + len(str(bericht[2])) + 3
+
+        resized_text_blok = text_blok_raw.resize(((message_length * 12), 100))
+        text_blok = ImageTk.PhotoImage(resized_text_blok)
+        label = Label(master, text=(bericht[0] + "\n" + bericht[1] + ", " +
+                                    str(bericht[3]) + " " + str(bericht[2])),
+                      image=text_blok, compound="center", font=("Arial", 15))
+        label.image = text_blok
+        label.configure(background="#ffffff")
+        label.pack()
+
+
 def stations_keuze(station):
     pagina = Toplevel(root)
 
@@ -67,20 +97,24 @@ def stations_keuze(station):
     frame = Frame(pagina)
     frame.place(relx=0.1, rely=0.1, anchor=S)
     frame.configure(background="#ffffff")
+
     berichten_frame = Frame(pagina)
     berichten_frame.place(relx=0, rely=1, anchor=SW)
     berichten_frame.configure(background="#ffffff")
+
     faciliteit_frame = Frame(pagina)
     faciliteit_frame.place(relx=1, rely=1, anchor=SE)
     faciliteit_frame.configure(background="#ffffff")
+
     weer_frame = Frame(pagina)
     weer_frame.place(relx=1, rely=0, anchor=NE)
     weer_frame.configure(background="#FFFFFF")
 
     weer_voorspelling(station, weer_frame)
 
+    berichten(berichten_frame, station)
+
     ovfiets_raw = Image.open("images/img_ovfiets.png")
-    text_blok_raw = Image.open("images/textBlok.png")
     lift_raw = Image.open("images/img_lift.png")
     pr_raw = Image.open("images/img_pr.png")
     toilet_raw = Image.open("images/img_toilet.png")
@@ -96,28 +130,6 @@ def stations_keuze(station):
         WHERE station_city = %s""",
         (station,))
     faciliteiten = cursor.fetchall()
-
-    cursor.execute(
-        """SELECT bericht, naam, datum, tijd FROM berichten 
-        WHERE locatie = %s AND goedgekeurd = True 
-        ORDER BY datum, tijd DESC""",
-        (station,))
-    berichten = cursor.fetchmany(5)
-
-    for bericht in berichten:
-        if len(bericht[0]) > (3 + len(bericht[1]) + len(str(bericht[3])) + len(str(bericht[2]))):
-            message_length = len(bericht[0])
-        else:
-            message_length = len(bericht[1]) + len(str(bericht[3])) + len(str(bericht[2])) + 3
-
-        resized_text_blok = text_blok_raw.resize(((message_length * 12), 100))
-        text_blok = ImageTk.PhotoImage(resized_text_blok)
-        label = Label(berichten_frame, text=(bericht[0] + "\n" + bericht[1] + ", " +
-                                             str(bericht[3]) + " " + str(bericht[2])),
-                      image=text_blok, compound="center", font=("Arial", 15))
-        label.image = text_blok
-        label.configure(background="#ffffff")
-        label.pack()
 
     for faciliteit in faciliteiten:
         count = 0
@@ -146,7 +158,6 @@ def stations_keuze(station):
 
                 label.configure(background="#ffffff")
                 label.pack()
-
 
 
 def show():
