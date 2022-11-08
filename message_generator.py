@@ -34,7 +34,6 @@ def add_database(data, connection, modID, status):
 
 
 psswrd = input("Wat is het wachtwoord: ")
-database_connection = open_database(psswrd)
 moderatorID = 1
 
 with open("txt/stations.txt", "r") as stations_txt:
@@ -56,6 +55,8 @@ with open("txt/stations.txt", "r") as stations_txt:
             for station in stations:
 
                 for x in range(5):
+                    database_connection = open_database(psswrd)
+
                     moderatie_tijd = datetime.now().time()
                     moderatie_datum = datetime.now().date()
 
@@ -69,5 +70,6 @@ with open("txt/stations.txt", "r") as stations_txt:
                     print(bericht_invoer)
                     time.sleep(1)
 
-database_connection.commit()
-database_connection.close()
+                    database_connection.commit()
+                    database_connection.close()
+

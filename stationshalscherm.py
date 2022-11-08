@@ -55,7 +55,11 @@ def weer_voorspelling(stad, master):
     label.pack()
 
 
-def berichten(master, stad):
+def berichten_functie(master, stad):
+    berichten_frame = Frame(master)
+    berichten_frame.place(relx=0, rely=1, anchor=SW)
+    berichten_frame.configure(background="#ffffff")
+
     connection = open_database(psswrd)
     cursor = connection.cursor()
 
@@ -74,14 +78,21 @@ def berichten(master, stad):
         else:
             message_length = len(bericht[1]) + len(str(bericht[3])) + len(str(bericht[2])) + 3
 
-        resized_text_blok = text_blok_raw.resize(((message_length * 12), 100))
+        foto_length = message_length * 12
+
+        while foto_length > 1300:
+            foto_length = foto_length - 20
+
+        resized_text_blok = text_blok_raw.resize((foto_length, 100))
         text_blok = ImageTk.PhotoImage(resized_text_blok)
-        label = Label(master, text=(bericht[0] + "\n" + bericht[1] + ", " +
+        label = Label(berichten_frame, text=(bericht[0] + "\n" + bericht[1] + ", " +
                                     str(bericht[3]) + " " + str(bericht[2])),
                       image=text_blok, compound="center", font=("Arial", 15))
         label.image = text_blok
         label.configure(background="#ffffff")
         label.pack()
+
+    connection.close()
 
 
 def stations_keuze(station):
@@ -98,10 +109,6 @@ def stations_keuze(station):
     frame.place(relx=0.1, rely=0.1, anchor=S)
     frame.configure(background="#ffffff")
 
-    berichten_frame = Frame(pagina)
-    berichten_frame.place(relx=0, rely=1, anchor=SW)
-    berichten_frame.configure(background="#ffffff")
-
     faciliteit_frame = Frame(pagina)
     faciliteit_frame.place(relx=1, rely=1, anchor=SE)
     faciliteit_frame.configure(background="#ffffff")
@@ -112,15 +119,12 @@ def stations_keuze(station):
 
     weer_voorspelling(station, weer_frame)
 
-    berichten(berichten_frame, station)
-
     ovfiets_raw = Image.open("images/img_ovfiets.png")
     lift_raw = Image.open("images/img_lift.png")
     pr_raw = Image.open("images/img_pr.png")
     toilet_raw = Image.open("images/img_toilet.png")
 
-    sluiten = Button(frame, text="Ga terug", command=pagina.destroy, width=20, font=("Arial", 15))
-    sluiten.pack()
+    Button(frame, text="Ga terug", command=pagina.destroy, width=20, font=("Arial", 15)).pack()
 
     connection = open_database(psswrd)
     cursor = connection.cursor()
@@ -158,6 +162,10 @@ def stations_keuze(station):
 
                 label.configure(background="#ffffff")
                 label.pack()
+
+    connection.close()
+
+    berichten_functie(pagina, station)
 
 
 def show():

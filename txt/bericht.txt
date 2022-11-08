@@ -14,3 +14,4 @@ Wie moet ook naar Haarlem?
 Ik heb geen zin om naar school te gaan vandaag.
 Waar kan ik het lekkerste eten halen hier?
 Is er een snellere route dan de app zegt?
+Dit is het langste bericht dat je kan hebben, het bestaat uit 140 karakters. Dit is om te testen hoe het eruit ziet in de database.........
