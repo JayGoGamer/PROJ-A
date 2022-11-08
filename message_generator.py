@@ -23,14 +23,14 @@ def add_database(data, connection, modID, status):
     else:
         gekeurd = False
 
-    moderatie_tijd = "14:22:18"
-    moderatie_datum = "07/11/22"
+    moderatie_tijd = datetime.now().time()
+    moderatie_datum = datetime.now().date()
 
     cursor.execute("""INSERT INTO berichten 
                           (naam, bericht, datum, tijd, locatie, goedgekeurd, moderatorid, moddatum, modtijd) 
                       VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s)""",
                    (data[0], data[1], data[4], data[3], data[2], gekeurd, modID,
-                    moderatie_datum, moderatie_tijd))
+                    moderatie_datum.strftime("%d/%m/%y"), moderatie_tijd.strftime("%H:%M:%S")))
 
 
 psswrd = input("Wat is het wachtwoord: ")
