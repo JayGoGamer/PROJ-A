@@ -13,7 +13,7 @@ import psycopg2
 
 
 def berichten():
-    with open("berichten.txt", "r") as file:
+    with open("txt/berichten.txt", "r") as file:
         read_file = file.read()
         split_file = read_file.split("\n")
 
@@ -151,7 +151,7 @@ def add_database(data, connection, modID, status):
 
 
 def remove_line(data):
-    with open("berichten.txt", "w") as file:
+    with open("txt/berichten.txt", "w") as file:
         for i in range(1, len(data)):
             for x in range(0, len(data[0])):
                 file.write(data[i][x] + ";")
@@ -186,7 +186,7 @@ while True:
         database_connection.close()
         break
 
-    bericht = bestand_split("berichten.txt")
+    bericht = bestand_split("txt/berichten.txt")
 
     print("\nHet bericht om te modereren: " + bericht[0][1])
     print("\nDe naam om te modereren: " + bericht[0][0])

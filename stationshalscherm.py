@@ -30,7 +30,7 @@ def open_database(password):
 
 
 def weer_voorspelling(stad, master):
-    with open("api.txt", "r") as api_key_raw:
+    with open("txt/api.txt", "r") as api_key_raw:
         api_key = api_key_raw.read()
     url = "https://api.openweathermap.org/data/2.5/weather?lang=nl&q=" + stad + \
           "&appid=" + api_key + "&units=metric"
@@ -168,7 +168,7 @@ psswrd = input("Geef het wachtwoord van de database op: ")
 
 options = []
 
-with open("stations.txt", "r") as file:
+with open("txt/stations.txt", "r") as file:
     read_file = file.read()
     steden = read_file.split("\n")
 

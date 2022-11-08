@@ -9,7 +9,7 @@
 from datetime import datetime
 import random
 
-with open("stations.txt", "r") as file:
+with open("txt/stations.txt", "r") as file:
     stations_file = file.read()
     stations = stations_file.split("\n")
 
@@ -37,5 +37,5 @@ while True:
 tijd = datetime.now().time()
 datum = datetime.now().date()
 
-with open("berichten.txt", "a") as file:
+with open("txt/berichten.txt", "a") as file:
     file.write(naam + ";" + bericht + ";" + stations[station] + ";" + tijd.strftime("%H:%M:%S") + ";" + datum.strftime("%d/%m/%y") + "\n")
